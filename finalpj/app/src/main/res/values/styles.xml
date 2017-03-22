@@ -1,17 +1,22 @@
 <?xml version="1.0"?>
-    <resources>
-    <style parent="Theme.AppCompat.Light.NoActionBar" name="AppTheme">
+<resources>
 
-    <item name="colorPrimary">@color/colorPrimary</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
 
-    <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 
-    <item name="homeAsUpIndicator">@drawable/ic_drawer</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
-    <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
+        <item name="homeAsUpIndicator">@drawable/ic_drawer</item>
 
-</style>
+        <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
+
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

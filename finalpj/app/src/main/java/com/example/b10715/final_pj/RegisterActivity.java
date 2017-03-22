@@ -71,7 +71,7 @@ public class RegisterActivity extends Activity {
                     String password = (String)params[1];
                     String email = (String)params[2];
 
-                    String link="http://192.168.0.3/insert.php";
+                    String link="http://192.168.0.4/insert.php";
                     String data  = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8");
                     data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
                     data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");

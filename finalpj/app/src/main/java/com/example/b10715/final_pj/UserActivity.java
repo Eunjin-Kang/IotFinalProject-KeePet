@@ -49,8 +49,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
     Boolean album = false; // 앨범에서 가져온 사진인지, 직접 바로 찍은 사진인지를 구분
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
@@ -136,10 +135,6 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
                     case R.id.navigation_item_gps:
                         Intent intent2 = new Intent(UserActivity.this, GpsActivity.class);
                         startActivity(intent2);
-                        break;
-                    case R.id.navigation_item_feed:
-                        Intent intent3 = new Intent(UserActivity.this, FeedActivity.class);
-                        startActivity(intent3);
                         break;
                 }
                 return true;
@@ -321,9 +316,9 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
             new AlertDialog.Builder(this)
                     .setTitle("업로드할 이미지 선택")
-                    .setPositiveButton("사진촬영", cameraListener)
-                    .setNeutralButton("앨범선택", albumListener)
-                    .setNegativeButton("취소", cancelListener)
+                    .setPositiveButton("취소", cancelListener)
+                    .setNeutralButton("사진촬영", cameraListener)
+                    .setNegativeButton("앨범선택", albumListener)
                     .show();
         }
 

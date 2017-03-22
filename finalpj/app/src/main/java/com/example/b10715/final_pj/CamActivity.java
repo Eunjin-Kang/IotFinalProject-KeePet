@@ -152,10 +152,6 @@ public class CamActivity extends AppCompatActivity implements
                         Intent intent2 = new Intent(CamActivity.this, GpsActivity.class);
                         startActivity(intent2);
                         break;
-                    case R.id.navigation_item_feed:
-                        Intent intent3 = new Intent(CamActivity.this, FeedActivity.class);
-                        startActivity(intent3);
-                        break;
                 }
                 return true;
             }

@@ -120,10 +120,6 @@ public class FeedActivity extends AppCompatActivity {
                         Intent intent2 = new Intent(FeedActivity.this, GpsActivity.class);
                         startActivity(intent2);
                         break;
-                    case R.id.navigation_item_feed:
-                        Intent intent3 = new Intent(FeedActivity.this, FeedActivity.class);
-                        startActivity(intent3);
-                        break;
                 }
                 return true;
             }
