@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +15,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
@@ -38,9 +41,9 @@ import java.io.IOException;
 
 
 public class UserActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final int REQUEST_TAKE_PHOTO = 0;
-    private static final int REQUEST_TAKE_ALBUM = 1;
-    private static final int REQUEST_IMAGE_CROP = 2;
+    private static final int REQUEST_TAKE_PHOTO = 2001;
+    private static final int REQUEST_TAKE_ALBUM = 2002;
+    private static final int REQUEST_IMAGE_CROP = 2003;
 
     DrawerLayout mDrawerLayout;
     private Uri photoURI, albumURI = null;
@@ -60,28 +63,28 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
         btn_choose.setOnClickListener(this);
 
-        TabHost tabHost=(TabHost) findViewById(android.R.id.tabhost);
+        TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
         tabHost.setup();
 
-        TabHost.TabSpec spec1=tabHost.newTabSpec("User_Tab1");
+        TabHost.TabSpec spec1 = tabHost.newTabSpec("User_Tab1");
         Drawable home = ContextCompat.getDrawable(this, R.drawable.ic_action_home);
         spec1.setIndicator("", home);
         spec1.setContent(R.id.tab1);
         tabHost.addTab(spec1);
 
-        TabHost.TabSpec spec2=tabHost.newTabSpec("User_Tab2");
+        TabHost.TabSpec spec2 = tabHost.newTabSpec("User_Tab2");
         Drawable cam = ContextCompat.getDrawable(this, R.drawable.ic_action_cam);
         spec2.setIndicator("", cam);
         spec2.setContent(R.id.tab2);
         tabHost.addTab(spec2);
 
-        TabHost.TabSpec spec3=tabHost.newTabSpec("User_Tab3");
+        TabHost.TabSpec spec3 = tabHost.newTabSpec("User_Tab3");
         Drawable gps = ContextCompat.getDrawable(this, R.drawable.ic_action_gps);
         spec3.setIndicator("", gps);
         spec3.setContent(R.id.tab3);
         tabHost.addTab(spec3);
 
-        TabHost.TabSpec spec4=tabHost.newTabSpec("User_Tab4");
+        TabHost.TabSpec spec4 = tabHost.newTabSpec("User_Tab4");
         Drawable user = ContextCompat.getDrawable(this, R.drawable.ic_action_change_user);
         spec4.setIndicator("", user);
         spec4.setContent(R.id.tab4);
@@ -92,16 +95,16 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
-                if(tabId.equals("User_Tab1")){
+                if (tabId.equals("User_Tab1")) {
                     Intent intenta = new Intent(UserActivity.this, ProfileActivity.class);
                     startActivity(intenta);
-                }else if(tabId.equals("User_Tab2")){
+                } else if (tabId.equals("User_Tab2")) {
                     Intent intents = new Intent(UserActivity.this, CamActivity.class);
                     startActivity(intents);
-                }else if(tabId.equals("User_Tab3")){
+                } else if (tabId.equals("User_Tab3")) {
                     Intent intentd = new Intent(UserActivity.this, GpsActivity.class);
                     startActivity(intentd);
-                }else if(tabId.equals("User_Tab4")){
+                } else if (tabId.equals("User_Tab4")) {
                     Intent intentf = new Intent(UserActivity.this, UserActivity.class);
                     startActivity(intentf);
                 }
@@ -148,10 +151,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
      */
     public void doTakePhotoAction() // 카메라 촬영 후 이미지 가져오기
     {
-        Log.i("action","camera");
-        Intent takePictureIntent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Log.i("action","Intent takePictureIntent");
-
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
             try {
@@ -161,13 +161,9 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             if (photoFile != null) {
-                Log.i("action","after if");
                 photoURI = Uri.fromFile(photoFile); // 임시 파일의 위치,경로 가져옴
-                Log.i("action"," photoURI = Uri.fromFile");
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // 임시 파일 위치에 저장
-                Log.i("action"," takePictureIntent.putExtra");
-                startActivityForResult(takePictureIntent,REQUEST_TAKE_PHOTO);
-                Log.i("action","startActivityForResult");
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
@@ -193,12 +189,12 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 앨범에서 이미지 가져오기
      */
-    public void doTakeAlbumAction() // 앨범에서 이미지 가져오기
+    private void doTakeAlbumAction()
     {
         // 앨범 호출
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-        startActivityForResult(intent, REQUEST_TAKE_ALBUM);
+        startActivityForResult(intent, REQUEST_TAKE_PHOTO);
     }
 
 
@@ -221,83 +217,72 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        Log.i("onActivityResult", "CALL");
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) {
+            Toast.makeText(getApplicationContext(), "onActivityResult : RESULT_NOT_OK", Toast.LENGTH_LONG).show();
+        } else {
+            switch (requestCode) {
+                case REQUEST_TAKE_ALBUM: // 앨범 이미지 가져오기
+                    album = true;
+                    File albumFile = null;
+                    try {
+                        albumFile = createImageFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if(albumFile != null){
+                        albumURI = Uri.fromFile(albumFile); // 앨범 이미지 Crop한 결과는 새로운 위치 저장
+                    }
 
-        if(resultCode != RESULT_OK)
-            return;
+                    photoURI = data.getData(); // 앨범 이미지의 경로
 
-        switch(requestCode)
-        {
-            case REQUEST_TAKE_ALBUM:
-            {
-                album = true;
-                File albumFile = null;
-                try {
-                    albumFile = createImageFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(albumFile != null){
-                    albumURI = Uri.fromFile(albumFile); // 앨범 이미지 Crop한 결과는 새로운 위치 저장
-                }
+                    // iv_capture 에 띄우기
+                    Bitmap image_bitmap 	= null;
+                    try {
+                        image_bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoURI);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    iv_capture.setImageBitmap(image_bitmap);
 
-                photoURI = data.getData(); // 앨범 이미지의 경로
 
-                //iv_capture에 띄우기
-                Bitmap image_bitmap 	= null;
-                try {
-                    image_bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoURI);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                iv_capture.setImageBitmap(image_bitmap);
+                    // break; REQUEST_IMAGE_CAPTURE로 전달하여 Crop
+                case REQUEST_TAKE_PHOTO:
+                    cropImage();
 
-            }
+                    break;
+                case REQUEST_IMAGE_CROP:
 
-            case REQUEST_TAKE_PHOTO:
-            {
-                Log.i("action","REQUEST_TAKE_PHOTO");
-                cropImage();
-                Log.i("action","cropImage");
-                break;
-            }
-            case REQUEST_IMAGE_CROP:
-            {
-                // 크롭이 된 이후의 이미지를 넘겨 받습니다.
-                // 이미지뷰에 이미지를 보여준다거나 부가적인 작업 이후에
-                // 임시 파일을 삭제합니다.
-                if(resultCode != RESULT_OK) {
-                    return;
-                }
+                    Bitmap photo = BitmapFactory.decodeFile(photoURI.getPath());
+                    iv_capture.setImageBitmap(photo);
 
-                Bitmap photo = BitmapFactory.decodeFile(photoURI.getPath());
-                iv_capture.setImageBitmap(photo);
+                    Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE ); // 동기화
+                    if(album == false) {
+                        mediaScanIntent.setData(photoURI); // 동기화
+                    } else if(album == true){
+                        album = false;
+                        mediaScanIntent.setData(albumURI); // 동기화
+                    }
+                    this.sendBroadcast(mediaScanIntent); // 동기화
 
-                Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE ); // 동기화
-                if(album == false) {
-                    mediaScanIntent.setData(photoURI); // 동기화
-                } else if(album == true){
-                    album = false;
-                    mediaScanIntent.setData(albumURI); // 동기화
-                }
-                this.sendBroadcast(mediaScanIntent); // 동기화
-
-                break;
+                    break;
             }
         }
     }
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.btn_choose_image) {
+        if (v.getId() == R.id.btn_choose_image) {
             DialogInterface.OnClickListener cameraListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Log.i("button","Takecamera");
+                    Log.i("button", "Takecamera");
                     doTakePhotoAction();
-                    Log.i("button","Takecamera2");
+                    Log.i("button", "Takecamera2");
                 }
             };
             DialogInterface.OnClickListener albumListener = new DialogInterface.OnClickListener() {
@@ -316,18 +301,17 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
             new AlertDialog.Builder(this)
                     .setTitle("업로드할 이미지 선택")
-                    .setPositiveButton("취소", cancelListener)
-                    .setNeutralButton("사진촬영", cameraListener)
-                    .setNegativeButton("앨범선택", albumListener)
+                    .setPositiveButton("사진촬영", cameraListener)
+                    .setNeutralButton("앨범선택", albumListener)
+                    .setNegativeButton("취소", cancelListener)
                     .show();
         }
 
     }
 
 
-
     //Logout function
-    private void logout(){
+    private void logout() {
         //Creating an alert dialog to confirm logout
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage("Are you sure you want to logout?");
@@ -395,5 +379,47 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+    /*public boolean isCheck(String permission) {
+        switch (permission) {
+            case "Camera":
+                Log.i("Camera Permission", "CALL");
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    // 다시 보지 않기 버튼을 만드려면, else 말고 이 부분에 바로 요청을 하도록 하면 됨
+                    //ActivityCompat.requestPermissions((Activity)mContext, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_CAMERA);
 
+                    if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        new AlertDialog.Builder(mContext)
+                                .setTitle("알림")
+                                .setMessage("저장소 권한은 거부되었습니다. 사용을 원하시면 설정에서 해당 권한을 직접 허용하셔야 합니다.")
+                                .setNeutralButton("설정", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        intent.setData(Uri.parse("package:com.shuvic.alumni.andokdcapp"));
+                                        mContext.startActivity(intent);
+                                    }
+                                })
+                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        ((Activity) mContext).finish();
+                                    }
+                                })
+                                .setCancelable(false)
+                                .create()
+                                .show();
+                    } else {
+                        ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_CAMERA);
+                    }
+                } else {
+                    return true;
+                }
+                break;
+
+
+        }
+        return true;
+
+    }*/
 }
