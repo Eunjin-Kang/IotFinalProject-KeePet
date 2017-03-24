@@ -56,6 +56,7 @@ import android.widget.ListView;
 import java.io.File;
 import java.io.IOException;
 
+import static android.R.attr.data;
 import static com.example.b10715.final_pj.Config.EMAIL_SHARED_PREF;
         import static com.example.b10715.final_pj.Config.LOGGEDIN_SHARED_PREF;
         import static com.example.b10715.final_pj.Config.SHARED_PREF_NAME;
@@ -78,13 +79,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private String mCurrentPhotoPath;
     Boolean album = false; // 앨범에서 가져온 사진인지, 직접 바로 찍은 사진인지를 구분
 
-    String dbName = "st_file.db";
-    int dbVersion = 3;
+/*    String dbName = "st_file.db";
     private MySQLiteOpenHelper helper;
-    private SQLiteDatabase db;
+    public SQLiteDatabase db;
     String tag = "SQLite"; // Log의 tag 로 사용
     public String tableName = "petinfo"; // DB의 table 명
-
+    MySQLiteOpenHelper db1;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -306,7 +306,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1) {
+        //if(requestCode == 1) {
             if(resultCode == RESULT_OK) {
 
                 String str1 = data.getStringExtra("INPUT_NAME");
@@ -323,7 +323,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             }else if(resultCode == RESULT_CANCELED) {
                 // 취소 버튼 클릭
             }
-        }
+        //}
 
 
         switch(requestCode) {
@@ -486,4 +486,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }*/
         return super.onOptionsItemSelected(item);
     }
+
+
 }
